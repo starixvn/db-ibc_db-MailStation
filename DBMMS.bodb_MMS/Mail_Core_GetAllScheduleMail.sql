@@ -1,37 +1,29 @@
+/*<info serverAlias="DBMMS-bodb_MMS" executers="bodbAdminNet" viewers="" isFunction="0" isNested="0"></info>*/
 
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
-
-/****** Object:  Stored Procedure dbo.Mail_Core_GetAllScheduleMail    Script Date: 2018-07-30 06:19:42 AM ******/
-
--- =============================================
--- Author:		Phillip.Truong
--- Create date: 2015-08-25
--- Description:	Get All Schedule Mail.
--- =============================================
-CREATE PROCEDURE [dbo].[Mail_Core_GetAllScheduleMail]
+ALTER PROCEDURE dbo.Mail_Core_GetAllScheduleMail
 AS
+/*	
+	Creator: Phillip.Truong
+	Task:  Get Mail List
+	DB: DBMMS/bodb_MMS
+	
+	Revisions: 
+		 - 20141118@Phillip: Initialize Get MailSchedule
+		 - 20180729@Robert: Tidy up the Mail Station [#99119]
+*/
+
 BEGIN
-	SET NOCOUNT ON;
-	SELECT	m.MailID,
-			m.MailName,
-			ms.CronExpression,
-			m.LastActive
-	FROM	dbo.Mail m
-			INNER JOIN dbo.MailSchedule ms
-			ON m.ScheduleID = ms.ScheduleID
-END
+    SET NOCOUNT ON;
+    SELECT m.MailID
+	    , m.MailName
+	    , ms.CronExpression
+	    , m.LastActive
+    FROM dbo.Mail AS m
+	   INNER JOIN dbo.MailSchedule AS ms ON m.ScheduleID = ms.ScheduleID;
 
+    SELECT GETDATE() AS Now;
+END;
 GO
 
-SET QUOTED_IDENTIFIER OFF 
+GRANT EXECUTE ON dbo.Mail_Core_GetAllScheduleMail TO [bodbAdminNet];
 GO
-SET ANSI_NULLS ON 
-GO
-
-
-GO 
- GRANT EXECUTE ON [dbo].[Mail_Core_GetAllScheduleMail] TO [bodbAdminNet]
-GO 
