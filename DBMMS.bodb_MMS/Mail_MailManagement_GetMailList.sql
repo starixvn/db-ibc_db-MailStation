@@ -1,5 +1,4 @@
 /*<info serverAlias="DBMMS-bodb_MMS" executers="bodbAdminNet" viewers="" isFunction="0" isNested="0"></info>*/
-
 ALTER PROCEDURE dbo.Mail_MailManagement_GetMailList
 	@Mailname       VARCHAR(500) = ''
    , @IsActive       INT          = -1
@@ -16,6 +15,8 @@ AS
 	Revisions: 
 		 - 20141118@Phillip: Initialize Get Mail List
 		 - 20180729@Robert: Tidy up the Mail Station [#99119]
+		 - 20180925@Helen: DB052.bodb_NAP Migration to DBCust - [Redmine:100493]
+		 
 */
 
 BEGIN
@@ -105,7 +106,7 @@ BEGIN
 		    , m.LastActive
 	    FROM(((Mail AS m WITH (NOLOCK)
 		   INNER JOIN MailGroup AS mg WITH (NOLOCK) ON m.MailGroupID = mg.MailGroupID)
-		   INNER JOIN DBNAP.bodb_NAP.dbo.Sites AS s WITH (NOLOCK) ON m.SiteId = s.SiteId)
+		   INNER JOIN DBPOL.NAP_UserControl.dbo.NAP_Sites AS s WITH (NOLOCK) ON m.SiteId = s.SiteId)
 		   LEFT OUTER JOIN Mail_Email AS mem WITH (NOLOCK) ON m.MailID = mem.MailID)
 		   LEFT OUTER JOIN Email AS em WITH (NOLOCK) ON mem.EmailID = em.EmailID
 	    WHERE m.MailName LIKE '%'+@MailName+'%'
