@@ -1,26 +1,22 @@
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
-
-/****** Object:  Stored Procedure dbo.Mail_Core_InsertMailLogs    Script Date: 2018-07-30 06:19:42 AM ******/
-
--- =============================================
--- Author:		Phillip.Truong
--- Create date: 2014-11-19
--- Description:	Insert Mail Log
--- =============================================
-CREATE PROCEDURE [dbo].[Mail_Core_InsertMailLogs]
+/*<info serverAlias="DBMMS-bodb_MMS" executers="bodbAdminNet" isFunction="0"></info>*/
+ALTER PROCEDURE [dbo].[Mail_Core_InsertMailLogs]
 	@TaskID int,
-	@ExceptionMessage varchar(500) = '',
-	@InnerMessage varchar(500) = '',
+	@ExceptionMessage varchar(1000) = '',
+	@InnerMessage varchar(1000) = '',
 	@StackTrace varchar(1000) = '',
 	@Status int = 0,
 	@LogTime varchar(50) = '',
 	@ErrCode int = 0 output,
 	@ErrMsg nvarchar(1000) = '' output
 AS
+/*
+	Creator: Phillip.Truong
+	Task:  Insert Mail Log
+	DB: DBMMS/bodb_MMS
+	
+	Revision:
+		- 20200309@Larry: MailStation improvement (modify parameter @ExceptionMessage, @InnerMessage) - [Redmine:126527]		
+*/
 BEGIN
 	SET NOCOUNT ON
 	INSERT INTO MailTaskLog VALUES(
@@ -39,15 +35,3 @@ BEGIN
 		RETURN;
 	END
 END
-
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-GO 
- GRANT EXECUTE ON [dbo].[Mail_Core_InsertMailLogs] TO [bodbAdminNet]
-GO 
