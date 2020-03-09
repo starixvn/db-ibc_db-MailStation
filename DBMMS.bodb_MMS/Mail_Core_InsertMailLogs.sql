@@ -1,7 +1,7 @@
 /*<info serverAlias="DBMMS-bodb_MMS" executers="bodbAdminNet" isFunction="0"></info>*/
 ALTER PROCEDURE [dbo].[Mail_Core_InsertMailLogs]
 	@TaskID int,
-	@ExceptionMessage varchar(1000) = '',
+	@ExceptionMessage varchar(max) = '',
 	@InnerMessage varchar(1000) = '',
 	@StackTrace varchar(1000) = '',
 	@Status int = 0,
