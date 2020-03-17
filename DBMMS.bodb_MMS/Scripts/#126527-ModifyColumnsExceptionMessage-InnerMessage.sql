@@ -7,7 +7,7 @@
 		- 20200309@Larry: Modify columns ExceptionMessage, InnerMessage - [Redmine:126527]
 */
 ALTER TABLE dbo.MailTaskLog
-ALTER COLUMN ExceptionMessage varchar(max)
+ALTER COLUMN ExceptionMessage varchar(2000)
 GO
 ALTER TABLE dbo.MailTaskLog
 ALTER COLUMN InnerMessage varchar(1000)
