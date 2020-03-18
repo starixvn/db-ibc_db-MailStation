@@ -1,5 +1,5 @@
 ﻿/*<info serverAlias="DBMMS-bodb_MMS" executers="bodbAdminNet" isFunction="0"></info>*/
-CREATE PROCEDURE Mail_Core_UpdateFailedForLongRunningTasks
+ALTER PROCEDURE Mail_Core_UpdateFailedForLongRunningTasks
 AS
 /*
 	Creator: Larry.Tran
@@ -25,7 +25,7 @@ BEGIN
 	)	
 	SELECT 
 		mt.TaskID
-	FROM dbo.MailTask AS mt
+	FROM dbo.MailTask AS mt WITH(NOLOCK)
 	WHERE mt.STATUS = @RunningStatus 
 		AND DATEDIFF(hour, mt.ScheduledTime, GETDATE()) > 2
 
@@ -49,7 +49,8 @@ BEGIN
 
 	UPDATE mt WITH(ROWLOCK,UPDLOCK)
 	SET
-		mt.STATUS = @FailedStatus	
+		mt.STATUS = @FailedStatus,
+		mt.LastSent = GETDATE()
 	FROM dbo.MailTask AS mt
 		INNER JOIN @RunningTask AS rt ON mt.TaskID = rt.TaskID
 END
