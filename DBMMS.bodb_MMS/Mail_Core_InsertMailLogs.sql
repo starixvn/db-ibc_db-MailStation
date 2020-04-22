@@ -2,7 +2,7 @@
 ALTER PROCEDURE [dbo].[Mail_Core_InsertMailLogs]
 	@TaskID int,
 	@ExceptionMessage varchar(2000) = '',
-	@InnerMessage varchar(1000) = '',
+	@InnerMessage varchar(500) = '',
 	@StackTrace varchar(1000) = '',
 	@Status int = 0,
 	@LogTime varchar(50) = '',
@@ -15,7 +15,7 @@ AS
 	DB: DBMMS/bodb_MMS
 	
 	Revision:
-		- 20200309@Larry: MailStation improvement (modify parameter @ExceptionMessage, @InnerMessage) - [Redmine:126527]		
+		- 20200309@Larry: MailStation improvement (modify parameter @ExceptionMessage) - [Redmine:126527]		
 */
 BEGIN
 	SET NOCOUNT ON
