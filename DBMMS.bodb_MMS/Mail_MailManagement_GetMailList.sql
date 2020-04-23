@@ -16,7 +16,7 @@ AS
 		 - 20141118@Phillip: Initialize Get Mail List
 		 - 20180729@Robert: Tidy up the Mail Station [#99119]
 		 - 20180925@Helen: DB052.bodb_NAP Migration to DBCust - [Redmine:100493]
-		 
+		 - 20200423@Larry: Get mail owners - [Redmine:126527]
 */
 
 BEGIN
@@ -104,6 +104,7 @@ BEGIN
 		    , em.EmailAddress
 		    , mem.Type
 		    , m.LastActive
+			, m.Owners
 	    FROM(((Mail AS m WITH (NOLOCK)
 		   INNER JOIN MailGroup AS mg WITH (NOLOCK) ON m.MailGroupID = mg.MailGroupID)
 		   INNER JOIN DBPOL.NAP_UserControl.dbo.NAP_Sites AS s WITH (NOLOCK) ON m.SiteId = s.SiteId)
@@ -153,6 +154,7 @@ BEGIN
 		    , LastSent
 		    , IsActive
 		    , LastActive
+			, Owners
 	    FROM
 		    (
 			   SELECT T1.MailID
@@ -166,6 +168,7 @@ BEGIN
 				   , T1.LastSent
 				   , T1.IsActive
 				   , T1.LastActive
+				   , T1.Owners
 				   , STUFF(
 					(
 					    SELECT '; '+T2.EmailAddress
@@ -185,13 +188,11 @@ BEGIN
 					, T1.LastSent
 					, T1.IsActive
 					, T1.LastActive
+					, T1.Owners
 		    ) AS SourceTable PIVOT(MAX(EmailAddress) FOR Type IN([0]
 													, [1]
 													, [2])) PivotTable;
 
     SELECT GETDATE() AS Now;
 END;
-GO
-
-GRANT EXECUTE ON dbo.Mail_MailManagement_GetMailList TO [bodbAdminNet];
 GO

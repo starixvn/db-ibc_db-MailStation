@@ -1,17 +1,4 @@
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
-
-/****** Object:  Stored Procedure dbo.Mail_MailManagement_UpdateMail    Script Date: 2018-07-30 06:19:41 AM ******/
--- =============================================
--- Author:		Phillip.Truong
--- Create date: 2014-11-17
--- Description:	Update Mail
--- Revision:
---   2015-08-04 - Phillip - #39680-Add new features to the Mail Station: Clear all Task history when update Mail.
--- =============================================
+/*<info serverAlias="DBMMS-bodb_MMS" executers="bodbAdminNet" isFunction="0"></info>*/
 CREATE PROCEDURE [dbo].[Mail_MailManagement_UpdateMail]
 	@MailID int = -1,
 	@MailName nvarchar(500) = '',
@@ -30,9 +17,19 @@ CREATE PROCEDURE [dbo].[Mail_MailManagement_UpdateMail]
 	@Interval int = 0,
 	@IsActive bit = 0,
 	@Description nvarchar(500) = '',
+	@Owners VARCHAR(200) = '',
 	@ErrCode int = 0 output,
 	@ErrMsg nvarchar(1000) = '' output
 AS
+/*
+	Creator: Phillip.Truong
+	Task:  Insert Mail
+	DB: DBMMS/bodb_MMS
+	
+	Revision:
+		- 2015-08-04 - Phillip - #39680-Add new features to the Mail Station: Clear all Task history when update Mail.
+		- 20200423@Larry: Update mail owners - [Redmine:126527]
+*/
 BEGIN
 	SET NOCOUNT ON
 	IF (NOT EXISTS (SELECT 1 FROM dbo.Mail WHERE MailID = @MailID))
@@ -115,8 +112,8 @@ BEGIN
 		END
 	END
 		
-	-- Update Mail 
-	UPDATE Mail 
+	-- Update Mail
+	UPDATE Mail
 		SET MailName = @MailName,
 			MailGroupID = @MailGroupID,
 			SiteID = @SiteID,
@@ -124,7 +121,8 @@ BEGIN
 			ScheduleID = @ScheduleID,
 			MailFrom = @MailFrom,
 			IsActive = @IsActive,
-			[Description] = @Description
+			[Description] = @Description,
+			Owners = @Owners
 	WHERE MailID = @MailID
 		
 	IF @@ERROR <> 0
@@ -266,13 +264,3 @@ BEGIN
 END
 
 GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-GO 
- GRANT EXECUTE ON [dbo].[Mail_MailManagement_UpdateMail] TO [bodbAdminNet]
-GO 

@@ -16,6 +16,7 @@ CREATE PROCEDURE [dbo].[Mail_MailManagement_InsertMail]
 	@Attempt int = 0,
 	@Interval int = 0,
 	@Description nvarchar(500) = '',
+	@Owners VARCHAR(200) = '',
 	@ErrCode int = 0 output,
 	@ErrMsg nvarchar(1000) = '' output
 AS
@@ -26,6 +27,7 @@ AS
 	
 	Revision:
 		- 20200508@Larry: Fix issue not create new mail on msite - [Redmine:133885]
+		- 20200423@Larry: Add mail owners - [Redmine:126527]
 */
 BEGIN
 	SET NOCOUNT ON
@@ -91,7 +93,8 @@ BEGIN
 	    LastSent,
 	    IsActive,
 	    Description,
-	    LastActive
+	    LastActive,
+	    Owners
 	)
 	VALUES(
 		@MailName,
@@ -103,7 +106,8 @@ BEGIN
 		NULL,
 		@IsActive,
 		@Description,
-		NULL
+		NULL,
+		@Owners
 	)
 		
 	IF @@ERROR <> 0

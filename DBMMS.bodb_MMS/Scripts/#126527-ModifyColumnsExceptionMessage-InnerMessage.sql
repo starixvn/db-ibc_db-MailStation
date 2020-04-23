@@ -9,3 +9,6 @@
 ALTER TABLE dbo.MailTaskLog
 ALTER COLUMN ExceptionMessage varchar(2000)
 GO
+ALTER TABLE dbo.Mail
+ADD Owners VARCHAR(200) NULL
+GO
