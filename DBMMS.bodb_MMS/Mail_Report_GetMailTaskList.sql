@@ -4,7 +4,8 @@ ALTER PROCEDURE [dbo].[Mail_Report_GetMailTaskList]
 	@SiteID int = -1,
 	@FromDate date = null,
 	@ToDate date = null,
-	@Status int = -1
+	@Status int = -1,
+	@TriggerType INT = -1
 AS
 /*
 	Creator: Phillip.Truong
@@ -13,7 +14,7 @@ AS
 	
 	Revision:
 		- 20180925@Helen: DB052.bodb_NAP Migration to DBCust - [Redmine:100493]
-		
+		- 20200424@Larry: Add more filter @TriggerType - [Redmine:126527]
 */
 BEGIN
 	SET NOCOUNT ON
@@ -38,8 +39,7 @@ BEGIN
 		AND CAST(mt.ScheduledTime AS DATETIME) BETWEEN CAST(@FromDate AS DATETIME) AND DATEADD(second, -1, (DATEADD(day, 1, CAST(@ToDate AS DATETIME))))
 		AND (@Status = -1 OR mt.[Status] = @Status)
 		AND (@SiteID = -1 OR m.SiteID = @SiteID)
+		AND (@TriggerType = -1 OR m.TriggerType = @TriggerType)
 	ORDER BY mt.ScheduledTime DESC
 END
 GO
-GRANT EXECUTE ON [dbo].[Mail_Report_GetMailTaskList] TO [bodbAdminNet]
-GO 
