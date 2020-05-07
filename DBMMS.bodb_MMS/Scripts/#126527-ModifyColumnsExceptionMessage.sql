@@ -1,3 +1,4 @@
+/*<info serverAlias="DBMMS-bodb_MMS"></info>*/
 /*
 	Creator: Larry.Tran
 	Task: MailStation improvement - [Redmine:126527]
