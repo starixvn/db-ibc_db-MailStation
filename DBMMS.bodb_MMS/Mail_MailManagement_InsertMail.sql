@@ -1,16 +1,4 @@
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
-
-/****** Object:  Stored Procedure dbo.Mail_MailManagement_InsertMail    Script Date: 2018-07-30 06:19:41 AM ******/
-
--- =============================================
--- Author:		Phillip.Truong
--- Create date: 2014-11-14
--- Description:	Update Mail
--- =============================================
+/*<info serverAlias="DBMMS-bodb_MMS" executers="bodbAdminNet" isFunction="0"></info>*/
 CREATE PROCEDURE [dbo].[Mail_MailManagement_InsertMail]
 	@MailName nvarchar(500) = '',
 	@MailGroupID int = 0,
@@ -31,6 +19,14 @@ CREATE PROCEDURE [dbo].[Mail_MailManagement_InsertMail]
 	@ErrCode int = 0 output,
 	@ErrMsg nvarchar(1000) = '' output
 AS
+/*
+	Creator: Phillip.Truong
+	Task:  Insert Mail
+	DB: DBMMS/bodb_MMS
+	
+	Revision:
+		- 20200508@Larry: Fix issue not create new mail on msite - [Redmine:133885]
+*/
 BEGIN
 	SET NOCOUNT ON
 	SET @MailName = ISNULL(@MailName, '')
@@ -83,8 +79,21 @@ BEGIN
 		SET @ScheduleID = NULL
 	END
 	
-	-- Insert Mail 
-	INSERT INTO Mail VALUES(
+	-- Insert Mail
+	INSERT INTO dbo.Mail
+	(	 
+	    MailName,
+	    MailGroupID,
+	    SiteID,
+	    TriggerType,
+	    ScheduleID,
+	    MailFrom,
+	    LastSent,
+	    IsActive,
+	    Description,
+	    LastActive
+	)
+	VALUES(
 		@MailName,
 		@MailGroupID,
 		@SiteID,
@@ -95,7 +104,7 @@ BEGIN
 		@IsActive,
 		@Description,
 		NULL
-		)
+	)
 		
 	IF @@ERROR <> 0
 	BEGIN
@@ -219,15 +228,4 @@ BEGIN
 	SET @ErrCode = 0
 	SET @ErrMsg = ''
 END
-
 GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-GO 
- GRANT EXECUTE ON [dbo].[Mail_MailManagement_InsertMail] TO [bodbAdminNet]
-GO 
