@@ -27,7 +27,7 @@ AS
 	
 	Revision:
 		- 20200508@Larry: Fix issue not create new mail on msite - [Redmine:133885]
-		- 20200423@Larry: Add mail owners - [Redmine:126527]
+		- 20200508@Larry: Add mail owners - [Redmine:126527]
 */
 BEGIN
 	SET NOCOUNT ON
