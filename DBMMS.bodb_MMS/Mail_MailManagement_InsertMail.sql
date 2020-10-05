@@ -17,6 +17,7 @@ CREATE PROCEDURE [dbo].[Mail_MailManagement_InsertMail]
 	@Interval int = 0,
 	@Description nvarchar(500) = '',
 	@Owners VARCHAR(200) = '',
+	@ModifiedBy VARCHAR(200),
 	@ErrCode int = 0 output,
 	@ErrMsg nvarchar(1000) = '' output
 AS
@@ -28,9 +29,12 @@ AS
 	Revision:
 		- 20200508@Larry: Fix issue not create new mail on msite - [Redmine:133885]
 		- 20200508@Larry: Add mail owners - [Redmine:126527]
+		- 20201005@Larry: Write log for mail status - [Redmine:142955]
 */
 BEGIN
 	SET NOCOUNT ON
+	DECLARE @LogMessage VARCHAR(1000)
+
 	SET @MailName = ISNULL(@MailName, '')
 	SET @MailTo = ISNULL(@MailTo, '')
 	IF @MailName = ''
@@ -228,6 +232,22 @@ BEGIN
 			END
 		END
 	END
+
+	-- Insert Mail Log
+	SET @LogMessage = (CASE WHEN @IsActive = 1 THEN 'enabled' ELSE 'disabled' END)
+
+	INSERT INTO dbo.MailLog
+	(		   
+		[Message],
+		LogTime,
+		MailID
+	)
+	VALUES
+	(		   
+		'It''s ' + @LogMessage + ' by ' + @ModifiedBy,
+		GETDATE(),
+		@MailID
+	)
 	
 	SET @ErrCode = 0
 	SET @ErrMsg = ''

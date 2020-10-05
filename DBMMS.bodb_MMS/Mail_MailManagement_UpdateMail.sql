@@ -18,6 +18,7 @@ CREATE PROCEDURE [dbo].[Mail_MailManagement_UpdateMail]
 	@IsActive bit = 0,
 	@Description nvarchar(500) = '',
 	@Owners VARCHAR(200) = '',
+	@ModifiedBy VARCHAR(200),
 	@ErrCode int = 0 output,
 	@ErrMsg nvarchar(1000) = '' output
 AS
@@ -29,9 +30,18 @@ AS
 	Revision:
 		- 2015-08-04 - Phillip - #39680-Add new features to the Mail Station: Clear all Task history when update Mail.
 		- 20200423@Larry: Update mail owners - [Redmine:126527]
+		- 20201005@Larry: Write log for mail status - [Redmine:142955]
 */
 BEGIN
 	SET NOCOUNT ON
+
+	DECLARE @LogMessage VARCHAR(1000)
+	DECLARE @PreviousActive BIT
+
+	SELECT @PreviousActive = m.IsActive 
+	FROM dbo.Mail AS m WITH(NOLOCK)
+	WHERE m.MailID = @MailID
+
 	IF (NOT EXISTS (SELECT 1 FROM dbo.Mail WHERE MailID = @MailID))
 	BEGIN
 		SET @ErrCode = 29
@@ -111,7 +121,7 @@ BEGIN
 			END
 		END
 	END
-		
+
 	-- Update Mail
 	UPDATE Mail
 		SET MailName = @MailName,
@@ -259,6 +269,25 @@ BEGIN
 	WHERE MailID = @MailID
 		AND Status <> 1 -- Do Not clear Running Task because this record is in use by Job.
 	
+	-- Insert Mail Log
+	IF @IsActive <> @PreviousActive
+	BEGIN
+		SET @LogMessage = (CASE WHEN @IsActive = 1 THEN 'enabled' ELSE 'disabled' END)
+
+		INSERT INTO dbo.MailLog
+		(		   
+		    [Message],
+		    LogTime,
+			MailID
+		)
+		VALUES
+		(		   
+		    'It''s ' + @LogMessage + ' by ' + @ModifiedBy,
+		    GETDATE(),
+			@MailID
+		)
+	END
+
 	SET @ErrCode = 0
 	SET @ErrMsg = ''
 END

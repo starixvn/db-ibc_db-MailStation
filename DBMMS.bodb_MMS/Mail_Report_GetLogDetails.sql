@@ -9,6 +9,7 @@ AS
 	
 	Revision:		
 		- 20200515@Larry: Order by LogTime - [Redmine:126527]
+		- 20201005@Larry: Order by LogID - [Redmine:142955]
 */
 BEGIN
 	SET NOCOUNT ON
@@ -25,6 +26,7 @@ BEGIN
 		dbo.MailTaskLog
 	WHERE
 		TaskID = @TaskID
-	ORDER BY LogTime
+	ORDER BY LogTime,
+		LogID
 END
 GO
