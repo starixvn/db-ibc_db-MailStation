@@ -1,12 +1,4 @@
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
-
-/****** Object:  Stored Procedure dbo.MailRecorder_InsRecord    Script Date: 2018-07-30 06:19:29 AM ******/
-
-
-
+/*<info serverAlias="DBMA-bodb_Maintenance" executers="bodbAdminNet" isFunction="0"></info>*/
 CREATE PROCEDURE [dbo].[MailRecorder_InsRecord]	
 	@AppID			INT,
 	@FuncID			INT,
@@ -14,8 +6,8 @@ CREATE PROCEDURE [dbo].[MailRecorder_InsRecord]
 	@Title			NVARCHAR(250)	= '',
 	@Subject		NVARCHAR(250),
 	@Body			NTEXT,
-	@MailCc			NVARCHAR(500)	= '',
-	@MailBcc		NVARCHAR(250)	= '',
+	@MailCc			NVARCHAR(2000)	= '',
+	@MailBcc		NVARCHAR(2000)	= '',
 	@MailDate		DATETIME,	
 	@Attachments	NVARCHAR(250),
 	@IsEncrypt		BIT				= 0,
@@ -25,12 +17,13 @@ CREATE PROCEDURE [dbo].[MailRecorder_InsRecord]
 	
 AS
 /*
-Created: 09/29/2011@Bobby
-Task : Insert new mail record
-DB: DB06.bodb_Maintenance
-Original:
-	20130904@Edward : Add parameter @IsEncrypt, and refacter code	
-Param's Explanation:
+	Created: 09/29/2011@Bobby
+	Task : Insert new mail record
+	DB: DB06.bodb_Maintenance
+	Revision:
+		- 20130904@Edward : Add parameter @IsEncrypt, and refacter code	
+		- 20210308@Larry: Modify max length of MailCc & MailBcc [Redmine: 151318]
+	Param's Explanation:
 
 */
 SET NOCOUNT ON
@@ -81,13 +74,3 @@ BEGIN
 END
 
 GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-GO 
- GRANT EXECUTE ON [dbo].[MailRecorder_InsRecord] TO [bodbAdminNet]
-GO 
