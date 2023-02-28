@@ -2,12 +2,12 @@
 CREATE PROCEDURE [dbo].[MailRecorder_InsRecord]	
 	@AppID			INT,
 	@FuncID			INT,
-	@MailTo			NVARCHAR(250),	
+	@MailTo			NVARCHAR(MAX),	
 	@Title			NVARCHAR(250)	= '',
 	@Subject		NVARCHAR(250),
 	@Body			NTEXT,
-	@MailCc			NVARCHAR(2000)	= '',
-	@MailBcc		NVARCHAR(2000)	= '',
+	@MailCc			NVARCHAR(MAX)	= '',
+	@MailBcc		NVARCHAR(MAX)	= '',
 	@MailDate		DATETIME,	
 	@Attachments	NVARCHAR(250),
 	@IsEncrypt		BIT				= 0,
@@ -23,6 +23,7 @@ AS
 	Revision:
 		- 20130904@Edward : Add parameter @IsEncrypt, and refacter code	
 		- 20210308@Larry: Modify max length of MailCc & MailBcc [Redmine: 151318]
+		- 20230228@Robert: Modify max length of Mail TO, MailCc & MailBcc [Redmine: 184390]
 	Param's Explanation:
 
 */
