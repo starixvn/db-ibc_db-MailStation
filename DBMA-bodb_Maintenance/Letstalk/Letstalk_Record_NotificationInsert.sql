@@ -1,15 +1,18 @@
+
 /*<info serverAlias="DBMA-bodb_Maintenance" executers="bodbAdminNet" viewers="" isFunction="0" isNested="0"></info>*/
 
-ALTER PROCEDURE [dbo].[Letstalk_Record_NotificationInsert] @TargetName   NVARCHAR(50),
-                                                   @Group        NVARCHAR(50),
-                                                   @Subject      NVARCHAR(250),
-                                                   @Content      NVARCHAR(MAX),
-                                                   @Attachments  NVARCHAR(250) = NULL,
-                                                   @InlineImages NVARCHAR(250) = NULL,
-                                                   @IsMessage    BIT,
-                                                   @IsSuccess    BIT,
-                                                   @ErrorCode    INT           = 0 OUTPUT,
-                                                   @ErrorMessage NVARCHAR(200) = '' OUTPUT
+ALTER PROCEDURE [dbo].[Letstalk_Record_NotificationInsert] 
+	@TargetName    NVARCHAR(50), 
+	@Group         NVARCHAR(200), 
+	@Subject       NVARCHAR(250), 
+	@Content       NVARCHAR(MAX), 
+	@Attachments   NVARCHAR(250) = NULL, 
+	@InlineImages  NVARCHAR(250) = NULL, 
+	@IsMessage     BIT, 
+	@IsSuccess     BIT, 
+	@LetstalkGroup NVARCHAR(200) = '', 	
+	@ErrorCode     INT           = 0 OUTPUT, 
+	@ErrorMessage  NVARCHAR(200) = '' OUTPUT
 AS
 
 /*	Creator: 20170329@Robert
@@ -18,50 +21,60 @@ AS
 	
 	Revisions: 
 		 - 20170329@Robert: Initialize
+		 - 20230724@Robert: Email/Letstalk Reports - Apply Bot API and change HTML UI for letstalk report #31, 32, 33, 34, 35 [#191481]		
 		
 */
 
-     BEGIN
-         SET NOCOUNT ON;
-         DECLARE @CreatedDate DATETIME, @SendSuccess TINYINT, @SendFail TINYINT;
-         SELECT @CreatedDate = GETDATE(),
-                @SendSuccess = CASE
-                                   WHEN @IsSuccess = 1
-                                   THEN 1
-                                   ELSE 0
-                               END,
-                @SendFail = CASE
-                                WHEN @IsSuccess = 0
-                                THEN 1
-                                ELSE 0
-                            END;
-         INSERT INTO Letstalk_Record
-         (TargetName,
-          [Group],
-          [Subject],
-          [Content],
-          Attachments,
-          InlineImages,
-          CreatedDate,
-          SendSuccess,
-          SendFail,
-          IsMessage
-         )
-         VALUES
-         (@TargetName,
-          @Group,
-          @Subject,
-          @Content,
-          @Attachments,
-          @InlineImages,
-          @CreatedDate,
-          @SendSuccess,
-          @SendFail,
-          @IsMessage
-         );
-         IF @@ERROR <> 0
-             BEGIN
-                 SELECT @ErrorCode = 101,
-                        @ErrorMessage = 'Insert does not successfully.';
-             END;
-     END;
+    BEGIN
+	   SET NOCOUNT ON;
+	   DECLARE 
+		   @CreatedDate DATETIME
+		 , @SendSuccess TINYINT
+		 , @SendFail    TINYINT;
+	   SELECT 
+			@CreatedDate = GETDATE(), 
+			@SendSuccess = CASE
+						    WHEN @IsSuccess = 1
+						    THEN 1
+						    ELSE 0
+						END, 
+			@SendFail = CASE
+						 WHEN @IsSuccess = 0
+						 THEN 1
+						 ELSE 0
+					  END;
+	   INSERT INTO Letstalk_Record
+		 (
+			TargetName, 
+			[Group], 
+			[Subject], 
+			[Content], 
+			Attachments, 
+			InlineImages, 
+			CreatedDate, 
+			SendSuccess, 
+			SendFail, 
+			IsMessage, 
+			LetstalkGroup
+		 )
+	   VALUES
+		    (
+			@TargetName, 
+			@Group, 
+			@Subject, 
+			@Content, 
+			@Attachments, 
+			@InlineImages, 
+			@CreatedDate, 
+			@SendSuccess, 
+			@SendFail, 
+			@IsMessage, 
+			@LetstalkGroup			
+		    );
+	   IF @@ERROR <> 0
+		  BEGIN
+			 SELECT 
+				   @ErrorCode = 101, 
+				   @ErrorMessage = 'Insert does not successfully.';
+		  END;
+    END;
