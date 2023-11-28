@@ -5,7 +5,8 @@ ALTER PROCEDURE [dbo].[Letstalk_Record_NotificationSelect]
 	@FromDate   DATETIME, 
 	@ToDate     DATETIME, 
 	@TargetName NVARCHAR(50) = 'All', 
-	@Group      NVARCHAR(50) = 'All'
+	@Group      NVARCHAR(50) = 'All', 
+	@Status     INT          = 2
 AS
 
 /*	Creator: 20170329@Robert
@@ -16,9 +17,18 @@ AS
 		 - 20170329@Robert: Initialize
 		 - 20171129@Robert: Select log by filter Targetname or Group
 		 - 20230724@Robert: Email/Letstalk Reports - Apply Bot API and change HTML UI for letstalk report #31, 32, 33, 34, 35 [#191481]		
+		 - 20231128@Robert: Select log by filter status
+     Param:
+	   - @Status: 
+		  . All = 2
+		  . FAILED = 0
+		  . SUCCEEDED = 1
+
+
 */
 
     BEGIN
+
 	   SET NOCOUNT ON;
 	   SELECT 
 			Id, 
@@ -49,6 +59,14 @@ AS
 						  THEN [Group]
 						  ELSE @Group
 					   END
+		    AND CASE
+				  WHEN @Status = 2
+				  THEN @Status
+				  WHEN @Status = 1
+				  THEN SendSuccess
+				  WHEN @Status = 0
+				  THEN SendFail
+			   END > 0
 	   ORDER BY 
 			  id DESC;
     END;
