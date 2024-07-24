@@ -6,7 +6,6 @@ ALTER PROCEDURE dbo.Mail_MailManagement_GetMailList
    , @SiteID         INT          = -1
    , @TriggerType    INT          = -1
    , @Emails         VARCHAR(500) = ''
-   , @TransformJson VARBINARY(MAX)
 AS
 /*	
 	Creator: Phillip.Truong
@@ -89,56 +88,7 @@ BEGIN
 				    INNER JOIN Mail_Email AS me ON e.EmailID = me.EmailID
 				WHERE e.EmailAddress LIKE '%'+RTRIM(LTRIM(@EmailFilter))+'%';
 			 END;
-	   END;
-
-    CREATE TABLE #tmpNAP_Sites
-    (
-	   [SiteId]          [TINYINT]  NOT NULL, 
-	   [SiteName]        [VARCHAR](50) NOT NULL, 
-	   [Description]     [VARCHAR](200) NULL, 
-	   [URL]             [VARCHAR](200) NULL, 
-	   [TestURL]         [VARCHAR](200) NULL, 
-	   [IsActive]        [BIT] NOT NULL, 
-	   [Environment]     [VARCHAR](10) NULL, 
-	   [SecretAccessKey] [VARCHAR](200) NULL, 
-	   [SiteKey]         [VARCHAR](50) NULL 
-	   PRIMARY KEY CLUSTERED([SiteId] ASC)
-    );
-
-   INSERT INTO #tmpNAP_Sites
-   (
-	  SiteId, 
-	  SiteName, 
-	  Description, 
-	  URL, 
-	  TestURL, 
-	  IsActive, 
-	  Environment, 
-	  SecretAccessKey, 
-	  SiteKey
-   )
-	  SELECT 
-		    SiteId, 
-		    SiteName, 
-		    Description, 
-		    URL, 
-		    TestURL, 
-		    IsActive, 
-		    Environment, 
-		    SecretAccessKey, 
-		    SiteKey
-	  FROM OPENJSON ( CAST( DECOMPRESS(@TransformJson) AS NVARCHAR(MAX)) ) 
-	  WITH (
-		 [SiteId] [TINYINT], 
-		 [SiteName] [VARCHAR](50), 
-		 [Description] [VARCHAR](200), 
-		 [URL] [VARCHAR](200), 
-		 [TestURL] [VARCHAR](200), 
-		 [IsActive] [BIT], 
-		 [Environment] [VARCHAR](10), 
-		 [SecretAccessKey] [VARCHAR](200), 
-		 [SiteKey] [VARCHAR](50)
-	  );
+	   END;  
 
     WITH tbl
 	    AS (
@@ -147,7 +97,7 @@ BEGIN
 		    , m.MailGroupID
 		    , mg.MailGroupName
 		    , m.SiteId
-		    , s.SiteName
+		    , '' SiteName
 		    , m.TriggerType
 		    , m.LastSent
 		    , m.IsActive
@@ -157,8 +107,7 @@ BEGIN
 		    , m.LastActive
 			, m.Owners
 	    FROM(((Mail AS m WITH (NOLOCK)
-		   INNER JOIN MailGroup AS mg WITH (NOLOCK) ON m.MailGroupID = mg.MailGroupID)
-		   INNER JOIN #tmpNAP_Sites AS s WITH (NOLOCK) ON m.SiteId = s.SiteId)
+		   INNER JOIN MailGroup AS mg WITH (NOLOCK) ON m.MailGroupID = mg.MailGroupID))
 		   LEFT OUTER JOIN Mail_Email AS mem WITH (NOLOCK) ON m.MailID = mem.MailID)
 		   LEFT OUTER JOIN Email AS em WITH (NOLOCK) ON mem.EmailID = em.EmailID
 	    WHERE m.MailName LIKE '%'+@MailName+'%'
@@ -246,7 +195,7 @@ BEGIN
 
     SELECT GETDATE() AS Now;
 
-    DROP TABLE #tmpNAP_Sites
+    
 END;
 
 GO
