@@ -1,4 +1,4 @@
-/*<info serverAlias="DBMMS-bodb_MMS" executers="bodbAdminNet" viewers="" isFunction="0" isNested="0"></info>*/
+/*<info serverAlias="DBMMS-bodb_MMS" executers="wsv_nap" viewers="" isFunction="0" isNested="0"></info>*/
 ALTER PROCEDURE dbo.Mail_MailManagement_GetMailList
 	@Mailname       VARCHAR(500) = ''
    , @IsActive       INT          = -1
@@ -17,6 +17,7 @@ AS
 		 - 20180729@Robert: Tidy up the Mail Station [#99119]
 		 - 20180925@Helen: DB052.bodb_NAP Migration to DBCust - [Redmine:100493]
 		 - 20200423@Larry: Get mail owners - [Redmine:126527]
+		 - 20240722@Robert: Remove link server DBPOL.NAP_UserControl [Redmine:208259]
 */
 
 BEGIN
@@ -87,7 +88,7 @@ BEGIN
 				    INNER JOIN Mail_Email AS me ON e.EmailID = me.EmailID
 				WHERE e.EmailAddress LIKE '%'+RTRIM(LTRIM(@EmailFilter))+'%';
 			 END;
-	   END;
+	   END;  
 
     WITH tbl
 	    AS (
@@ -96,7 +97,7 @@ BEGIN
 		    , m.MailGroupID
 		    , mg.MailGroupName
 		    , m.SiteId
-		    , s.SiteName
+		    , '' SiteName
 		    , m.TriggerType
 		    , m.LastSent
 		    , m.IsActive
@@ -106,8 +107,7 @@ BEGIN
 		    , m.LastActive
 			, m.Owners
 	    FROM(((Mail AS m WITH (NOLOCK)
-		   INNER JOIN MailGroup AS mg WITH (NOLOCK) ON m.MailGroupID = mg.MailGroupID)
-		   INNER JOIN DBPOL.NAP_UserControl.dbo.NAP_Sites AS s WITH (NOLOCK) ON m.SiteId = s.SiteId)
+		   INNER JOIN MailGroup AS mg WITH (NOLOCK) ON m.MailGroupID = mg.MailGroupID))
 		   LEFT OUTER JOIN Mail_Email AS mem WITH (NOLOCK) ON m.MailID = mem.MailID)
 		   LEFT OUTER JOIN Email AS em WITH (NOLOCK) ON mem.EmailID = em.EmailID
 	    WHERE m.MailName LIKE '%'+@MailName+'%'
@@ -194,5 +194,9 @@ BEGIN
 													, [2])) PivotTable;
 
     SELECT GETDATE() AS Now;
+
+    
 END;
+
 GO
+GRANT EXECUTE ON [dbo].[Mail_MailManagement_GetMailList] TO [wsv_nap]
