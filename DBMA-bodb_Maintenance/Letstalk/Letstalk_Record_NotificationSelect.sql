@@ -1,5 +1,5 @@
 
-/*<info serverAlias="DBMA-bodb_Maintenance" executers="bodbAdminNet" viewers="" isFunction="0" isNested="0"></info>*/
+/*<info serverAlias="DBMA-bodb_Maintenance" executers="wsv_nap" viewers="" isFunction="0" isNested="0"></info>*/
 
 ALTER PROCEDURE [dbo].[Letstalk_Record_NotificationSelect] 
 	@FromDate   DATETIME, 
@@ -18,6 +18,7 @@ AS
 		 - 20171129@Robert: Select log by filter Targetname or Group
 		 - 20230724@Robert: Email/Letstalk Reports - Apply Bot API and change HTML UI for letstalk report #31, 32, 33, 34, 35 [#191481]		
 		 - 20231128@Robert: Select log by filter status
+		 - 20250521@Robert: Modify the sps to get mattermost log in msite [#228141]
      Param:
 	   - @Status: 
 		  . All = 2
@@ -54,9 +55,9 @@ AS
 							THEN TargetName
 							ELSE @TargetName
 						 END
-		    AND [Group] = CASE
+		    AND [LetstalkGroup] = CASE
 						  WHEN @Group = 'All'
-						  THEN [Group]
+						  THEN [LetstalkGroup]
 						  ELSE @Group
 					   END
 		    AND CASE
