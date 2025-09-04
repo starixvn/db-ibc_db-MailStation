@@ -18,7 +18,7 @@ AS
 		 - 20171129@Robert: Select log by filter Targetname or Group
 		 - 20230724@Robert: Email/Letstalk Reports - Apply Bot API and change HTML UI for letstalk report #31, 32, 33, 34, 35 [#191481]		
 		 - 20231128@Robert: Select log by filter status
-		 - 20250521@Robert: Modify the sps to get mattermost log in msite [#228141]
+		 - 20250903@Robert: Filter rocket chat and letstalk log in msite. [#228141]
      Param:
 	   - @Status: 
 		  . All = 2
@@ -55,11 +55,19 @@ AS
 							THEN TargetName
 							ELSE @TargetName
 						 END
-		    AND [LetstalkGroup] = CASE
-						  WHEN @Group = 'All'
-						  THEN [LetstalkGroup]
-						  ELSE @Group
-					   END
+		    AND CASE
+				  WHEN l.Subject = 'Bot Api'
+				  THEN l.LetstalkGroup
+				  ELSE [Group]
+			   END = CASE
+					  WHEN @Group = 'All'
+					  THEN CASE
+							 WHEN l.Subject = 'Bot Api'
+							 THEN l.LetstalkGroup
+							 ELSE [Group]
+						  END
+					  ELSE @Group
+				   END
 		    AND CASE
 				  WHEN @Status = 2
 				  THEN @Status
